@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ОптТорг — Каталог товаров</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="/OptomSooda/css/style.css" />
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="ti ti-building-warehouse"></i></div>
+      <div>
+        <div class="brand-name">ОптТорг</div>
+        <div class="brand-sub">Система продаж</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-section-label">Каталог</div>
+      <a class="nav-item active" href="#"><i class="ti ti-package"></i> Товары</a>
+      <a class="nav-item" href="#"><i class="ti ti-tag"></i> Прайс-листы</a>
+      <a class="nav-item" href="#"><i class="ti ti-category"></i> Категории</a>
+
+      <div class="nav-section-label">Продажи</div>
+      <a class="nav-item" href="#"><i class="ti ti-clipboard-list"></i> Заказы</a>
+      <a class="nav-item" href="#"><i class="ti ti-users"></i> Клиенты</a>
+
+      <div class="nav-section-label">Отчёты</div>
+      <a class="nav-item" href="#"><i class="ti ti-chart-bar"></i> Аналитика</a>
+      <a class="nav-item" href="#"><i class="ti ti-download"></i> Экспорт</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">АМ</div>
+        <div>
+          <div class="user-name">Азиманын атасы</div>
+          <div class="user-role">Менеджер</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="layout">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Каталог товаров</h1>
+        <span class="item-count" id="itemCount">8 позиций</span>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <i class="ti ti-search search-icon"></i>
+          <input class="search-input" id="searchInput" type="text" placeholder="Поиск по названию или SKU…" oninput="filterProducts()" />
+        </div>
+        <button class="btn btn-outline" onclick="exportCSV()">
+          <i class="ti ti-download"></i> Экспорт
+        </button>
+        <button class="btn btn-primary" onclick="openModal()">
+          <i class="ti ti-plus"></i> Добавить товар
+        </button>
+      </div>
+    </header>
+
+    <div class="filter-bar">
+      <span class="filter-label">Категория:</span>
+      <div class="chips" id="chips">
+        <button class="chip active" onclick="setFilter(this,'all')">Все</button>
+        <button class="chip" onclick="setFilter(this,'Электроника')">Момо-жемиш</button>
+        <button class="chip" onclick="setFilter(this,'Бытовая химия')">Жер жемиш</button>
+        <button class="chip" onclick="setFilter(this,'Продукты питания')">Тамак-аш азыктары</button>
+        <button class="chip" onclick="setFilter(this,'Инструменты')">Дагы бирар нерсе</button>
+      </div>
+      <div class="sort-wrap">
+        <label class="filter-label" for="sortSelect">Сортировка:</label>
+        <select class="sort-select" id="sortSelect" onchange="filterProducts()">
+          <option value="name">Аты боюнча</option>
+          <option value="stock">Калдыгы</option>
+          <option value="price">Баасы</option>
+        </select>
+      </div>
+    </div>
+
+    <main class="main-content">
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--blue"><i class="ti ti-package"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="statTotal">8</div>
+            <div class="stat-label">Всего позиций</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--green"><i class="ti ti-circle-check"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="statInStock">6</div>
+            <div class="stat-label">Бар-жок</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--amber"><i class="ti ti-alert-triangle"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="statLow">1</div>
+            <div class="stat-label">Мало на складе</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--red"><i class="ti ti-circle-x"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="statOut">1</div>
+            <div class="stat-label">Товар жок</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="catalog-table">
+          <thead>
+            <tr>
+              <th class="col-name">Наименование</th>
+              <th class="col-cat">Категория</th>
+              <th class="col-sku">SKU</th>
+              <th class="col-stock">Остаток</th>
+              <th class="col-price">Оптовые цены</th>
+              <th class="col-status">Статус</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <i class="ti ti-mood-empty"></i>
+          <p>Ничего не найдено</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Добавить товар">
+    <div class="modal-header">
+      <h2 class="modal-title">Новый товар</h2>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="fName">Наименование</label>
+        <input class="form-input" id="fName" type="text" placeholder="Например: Кабель HDMI 2м" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fCat">Категория</label>
+          <select class="form-input" id="fCat">
+            <option>Электроника</option>
+            <option>Бытовая химия</option>
+            <option>Продукты питания</option>
+            <option>Инструменты</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fSku">SKU</label>
+          <input class="form-input" id="fSku" type="text" placeholder="EL-001" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fStock">Остаток (шт.)</label>
+          <input class="form-input" id="fStock" type="number" min="0" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fUnit">Единица</label>
+          <select class="form-input" id="fUnit">
+            <option>шт.</option><option>кг</option><option>л</option><option>уп.</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section-label">Оптовые цены (₽)</div>
+      <div class="price-inputs">
+        <div class="form-group">
+          <label class="form-label" for="fP1">от 1 шт.</label>
+          <input class="form-input" id="fP1" type="number" min="0" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fP10">от 10 шт.</label>
+          <input class="form-input" id="fP10" type="number" min="0" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fP100">от 100 шт.</label>
+          <input class="form-input" id="fP100" type="number" min="0" placeholder="0" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Отмена</button>
+      <button class="btn btn-primary" onclick="addProduct()"><i class="ti ti-check"></i> Сохранить</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
