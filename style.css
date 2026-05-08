@@ -221,6 +221,12 @@ body {
   overflow-x: hidden;
 }
 
+/* =============================================
+   ROUTER / PAGES
+   ============================================= */
+.page { display: none; flex-direction: column; flex: 1; }
+.page.active { display: flex; }
+
 
 /* =============================================
    TOPBAR
@@ -892,3 +898,6 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--col-border-strong); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--col-text-muted); }
+
+.page { display: none !important; }
+.page.active { display: flex !important; }

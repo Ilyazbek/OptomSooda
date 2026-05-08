@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ОптомСоода — Товар каталогу</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="ti ti-building-warehouse"></i></div>
+      <div>
+        <div class="brand-name">ОптомСоода</div>
+        <div class="brand-sub">Сатуу системасы</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-section-label">Каталог</div>
+      <a class="nav-item" data-page="catalog"    href="#catalog"><i class="ti ti-package"></i> Товарлар</a>
+      <a class="nav-item" data-page="pricelists" href="#pricelists"><i class="ti ti-tag"></i> Баа барактары</a>
+      <a class="nav-item" data-page="categories" href="#categories"><i class="ti ti-category"></i> Категориялар</a>
+
+      <div class="nav-section-label">Сатуулар</div>
+      <a class="nav-item" data-page="orders"  href="#orders"><i class="ti ti-clipboard-list"></i> Заказдар</a>
+      <a class="nav-item" data-page="clients" href="#clients"><i class="ti ti-users"></i> Кардарлар</a>
+
+      <div class="nav-section-label">Отчёттор</div>
+      <a class="nav-item" data-page="reports" href="#reports"><i class="ti ti-chart-bar"></i> Аналитика</a>
+      <a class="nav-item" data-page="export"  href="#export"><i class="ti ti-download"></i> Экспорт</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">АМ</div>
+        <div>
+          <div class="user-name">Азима</div>
+          <div class="user-role">Менеджер</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="layout">
+
+    <!-- ТОВАРЛАР -->
+    <div class="page" id="page-catalog">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Товар каталогу</h1>
+          <span class="item-count" id="catalogCount"></span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <i class="ti ti-search search-icon"></i>
+            <input class="search-input" id="searchInput" type="text" placeholder="Аты же SKU боюнча издөө…" oninput="catalog.filter()" />
+          </div>
+          <button class="btn btn-outline" onclick="catalog.exportCSV()"><i class="ti ti-download"></i> Экспорт</button>
+          <button class="btn btn-primary" onclick="catalog.openModal()"><i class="ti ti-plus"></i> Товар кошуу</button>
+        </div>
+      </header>
+      <div class="filter-bar">
+        <span class="filter-label">Категория:</span>
+        <div class="chips" id="catalogChips">
+          <button class="chip active" onclick="catalog.setFilter(this,'all')">Баары</button>
+          <button class="chip" onclick="catalog.setFilter(this,'Овощи')">Жашылчалар</button>
+          <button class="chip" onclick="catalog.setFilter(this,'Фрукты')">Мөмө-жемиш</button>
+          <button class="chip" onclick="catalog.setFilter(this,'Зелень и салаты')">Жашылдыктар</button>
+          <button class="chip" onclick="catalog.setFilter(this,'Бакалея')">Чето еще</button>
+          <button class="chip" onclick="catalog.setFilter(this,'Молочные продукты')">Сүт азыктары</button>
+          <button class="chip" onclick="catalog.setFilter(this,'Мясо и птица')">Эт жана гош</button>
+        </div>
+        <div class="sort-wrap">
+          <label class="filter-label">Сорттоо:</label>
+          <select class="sort-select" id="catalogSort" onchange="catalog.filter()">
+            <option value="name">Аты боюнча</option>
+            <option value="stock">Калдык боюнча</option>
+            <option value="price">Баасы боюнча</option>
+          </select>
+        </div>
+      </div>
+      <main class="main-content">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon stat-icon--blue"><i class="ti ti-package"></i></div><div class="stat-body"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Жалпы позициялар</div></div></div>
+          <div class="stat-card"><div class="stat-icon stat-icon--green"><i class="ti ti-circle-check"></i></div><div class="stat-body"><div class="stat-value" id="statInStock">0</div><div class="stat-label">Бар</div></div></div>
+          <div class="stat-card"><div class="stat-icon stat-icon--amber"><i class="ti ti-alert-triangle"></i></div><div class="stat-body"><div class="stat-value" id="statLow">0</div><div class="stat-label">Аз калды</div></div></div>
+          <div class="stat-card"><div class="stat-icon stat-icon--red"><i class="ti ti-circle-x"></i></div><div class="stat-body"><div class="stat-value" id="statOut">0</div><div class="stat-label">Жок</div></div></div>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead><tr>
+              <th class="col-name">Аталышы</th><th class="col-cat">Категория</th>
+              <th class="col-sku">SKU</th><th class="col-stock">Калдык</th>
+              <th class="col-price">Оптом баасы</th><th class="col-status">Абалы</th><th class="col-actions"></th>
+            </tr></thead>
+            <tbody id="catalogBody"></tbody>
+          </table>
+          <div class="empty-state" id="catalogEmpty" style="display:none"><i class="ti ti-mood-empty"></i><p>Эч нерсе табылган жок</p></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- БАА БАРАКТАРЫ -->
+    <div class="page" id="page-pricelists">
+      <header class="topbar">
+        <div class="topbar-left"><h1 class="page-title">Баа барактары</h1></div>
+        <div class="topbar-right">
+          <button class="btn btn-primary" onclick="pricelists.exportCSV()"><i class="ti ti-download"></i> CSV экспорт</button>
+        </div>
+      </header>
+      <main class="main-content">
+        <div class="pl-info-bar"><i class="ti ti-info-circle"></i> Оптом баалары <strong id="plDate"></strong> абалында. Баалар НДСсиз көрсөтүлгөн.</div>
+        <div id="plTables"></div>
+      </main>
+    </div>
+
+    <!-- КАТЕГОРИЯЛАР -->
+    <div class="page" id="page-categories">
+      <header class="topbar">
+        <div class="topbar-left"><h1 class="page-title">Категориялар</h1></div>
+        <div class="topbar-right">
+          <button class="btn btn-primary" onclick="categories.openModal()"><i class="ti ti-plus"></i> Категория кошуу</button>
+        </div>
+      </header>
+      <main class="main-content">
+        <div class="cat-grid" id="catGrid"></div>
+      </main>
+    </div>
+
+    <!-- ЗАКАЗДАР -->
+    <div class="page" id="page-orders">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Заказдар</h1>
+          <span class="item-count" id="ordersCount"></span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <i class="ti ti-search search-icon"></i>
+            <input class="search-input" id="ordersSearch" type="text" placeholder="Номер же кардар боюнча…" oninput="orders.filter()" />
+          </div>
+          <button class="btn btn-outline" onclick="orders.exportCSV()"><i class="ti ti-download"></i> Экспорт</button>
+          <button class="btn btn-primary" onclick="orders.openModal()"><i class="ti ti-plus"></i> Жаңы заказ</button>
+        </div>
+      </header>
+      <div class="filter-bar">
+        <span class="filter-label">Абалы:</span>
+        <div class="chips">
+          <button class="chip active" onclick="orders.setFilter(this,'all')">Баары</button>
+          <button class="chip" onclick="orders.setFilter(this,'new')">Жаңы</button>
+          <button class="chip" onclick="orders.setFilter(this,'processing')">Иштелүүдө</button>
+          <button class="chip" onclick="orders.setFilter(this,'shipped')">Жөнөтүлдү</button>
+          <button class="chip" onclick="orders.setFilter(this,'done')">Аяктады</button>
+          <button class="chip" onclick="orders.setFilter(this,'cancelled')">Жокко чыгарылды</button>
+        </div>
+      </div>
+      <main class="main-content">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon stat-icon--blue"><i class="ti ti-clipboard-list"></i></div><div class="stat-body"><div class="stat-value" id="ordStatTotal">0</div><div class="stat-label">Жалпы заказдар</div></div></div>
+          <div class="stat-card"><div class="stat-icon stat-icon--amber"><i class="ti ti-loader"></i></div><div class="stat-body"><div class="stat-value" id="ordStatActive">0</div><div class="stat-label">Иштелүүдө</div></div></div>
+          <div class="stat-card"><div class="stat-icon stat-icon--green"><i class="ti ti-truck"></i></div><div class="stat-body"><div class="stat-value" id="ordStatShipped">0</div><div class="stat-label">Жөнөтүлдү</div></div></div>
+          <div class="stat-card"><div class="stat-icon stat-icon--blue"><i class="ti ti-currency-ruble"></i></div><div class="stat-body"><div class="stat-value" id="ordStatRevenue">0</div><div class="stat-label">Түшүм (₽)</div></div></div>
+        </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead><tr>
+              <th style="width:10%">№ заказ</th><th style="width:20%">Кардар</th>
+              <th style="width:24%">Позициялар</th><th style="width:12%">Сумма</th>
+              <th style="width:12%">Дата</th><th style="width:12%">Абалы</th><th style="width:10%"></th>
+            </tr></thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+          <div class="empty-state" id="ordersEmpty" style="display:none"><i class="ti ti-clipboard-off"></i><p>Заказдар табылган жок</p></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- КАРДАРЛАР -->
+    <div class="page" id="page-clients">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Кардарлар</h1>
+          <span class="item-count" id="clientsCount"></span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <i class="ti ti-search search-icon"></i>
+            <input class="search-input" id="clientsSearch" type="text" placeholder="Кардар издөө…" oninput="clientsPage.filter()" />
+          </div>
+          <button class="btn btn-primary" onclick="clientsPage.openModal()"><i class="ti ti-plus"></i> Кардар кошуу</button>
+        </div>
+      </header>
+      <main class="main-content">
+        <div class="clients-list" id="clientsGrid"></div>
+        <div class="empty-state" id="clientsEmpty" style="display:none"><i class="ti ti-users-off"></i><p>Кардарлар табылган жок</p></div>
+      </main>
+    </div>
+
+    <!-- АНАЛИТИКА -->
+    <div class="page" id="page-reports">
+      <header class="topbar">
+        <div class="topbar-left"><h1 class="page-title">Аналитика</h1></div>
+        <div class="topbar-right">
+          <select class="sort-select" id="reportsRange" onchange="reports.render()" style="height:36px;padding:0 14px">
+            <option value="all">Бардык убак</option>
+            <option value="month">Учурдагы ай</option>
+            <option value="quarter">Квартал</option>
+          </select>
+        </div>
+      </header>
+      <main class="main-content">
+        <div class="stats-grid" id="reportsStats"></div>
+        <div class="reports-grid">
+          <div class="table-card">
+            <div class="card-header"><span class="card-title">Категория боюнча сатуулар</span></div>
+            <table class="data-table"><thead><tr><th>Категория</th><th>Заказдар</th><th>Сумма</th><th>Үлүш</th></tr></thead><tbody id="repCatBody"></tbody></table>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><span class="card-title">Топ-5 товар</span></div>
+            <table class="data-table"><thead><tr><th>Товар</th><th>Сатылды</th><th>Түшүм</th></tr></thead><tbody id="repTopBody"></tbody></table>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="card-header"><span class="card-title">Айлар боюнча түшүм</span></div>
+          <div class="chart-wrap" id="revenueChart"></div>
+        </div>
+        <div class="table-card">
+          <div class="card-header"><span class="card-title">Топ кардарлар</span></div>
+          <table class="data-table"><thead><tr><th>Кардар</th><th>Заказдар</th><th>Сумма</th><th>Акыркы заказ</th></tr></thead><tbody id="repClientsBody"></tbody></table>
+        </div>
+      </main>
+    </div>
+
+    <!-- ЭКСПОРТ -->
+    <div class="page" id="page-export">
+      <header class="topbar">
+        <div class="topbar-left"><h1 class="page-title">Маалыматтарды экспорттоо</h1></div>
+      </header>
+      <main class="main-content">
+        <p style="color:var(--col-text-secondary);margin-bottom:20px;font-size:14px">Жүктөп алуу үчүн маалымат түрүн тандаңыз. Бардык файлдар CSV (UTF-8) форматында.</p>
+        <div class="export-grid">
+          <div class="export-card" onclick="catalog.exportCSV()">
+            <div class="export-icon" style="background:#eef4fd;color:#1c4a8a"><i class="ti ti-package"></i></div>
+            <div class="export-info"><div class="export-title">Товар каталогу</div><div class="export-desc">Баалар жана калдык менен бардык позициялар</div></div>
+            <button class="btn btn-outline" style="margin-left:auto"><i class="ti ti-download"></i> CSV</button>
+          </div>
+          <div class="export-card" onclick="pricelists.exportCSV()">
+            <div class="export-icon" style="background:#e4f5ee;color:#1d6f52"><i class="ti ti-tag"></i></div>
+            <div class="export-info"><div class="export-title">Баа барагы</div><div class="export-desc">Деңгээлдер боюнча оптом баалары</div></div>
+            <button class="btn btn-outline" style="margin-left:auto"><i class="ti ti-download"></i> CSV</button>
+          </div>
+          <div class="export-card" onclick="orders.exportCSV()">
+            <div class="export-icon" style="background:#fef3e2;color:#92540a"><i class="ti ti-clipboard-list"></i></div>
+            <div class="export-info"><div class="export-title">Заказдардын тарыхы</div><div class="export-desc">Суммалар жана абалдар менен бардык заказдар</div></div>
+            <button class="btn btn-outline" style="margin-left:auto"><i class="ti ti-download"></i> CSV</button>
+          </div>
+          <div class="export-card" onclick="clientsPage.exportCSV()">
+            <div class="export-icon" style="background:#fdf0f0;color:#8f2b2b"><i class="ti ti-users"></i></div>
+            <div class="export-info"><div class="export-title">Кардарлар базасы</div><div class="export-desc">Компаниялар, байланыштар, ИНН</div></div>
+            <button class="btn btn-outline" style="margin-left:auto"><i class="ti ti-download"></i> CSV</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+  </div><!-- .layout -->
+
+  <!-- МОДАЛДАР -->
+  <div class="modal-overlay" id="catalogModalOverlay" onclick="catalog.closeModal()"></div>
+  <div class="modal" id="catalogModal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="catalogModalTitle">Жаңы товар</h2>
+      <button class="modal-close" onclick="catalog.closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Аталышы</label><input class="form-input" id="fName" type="text" placeholder="Мисалы: Картошка тазаланган" /></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Категория</label><select class="form-input" id="fCat"></select></div>
+        <div class="form-group"><label class="form-label">SKU</label><input class="form-input" id="fSku" type="text" placeholder="OV-001" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Калдык</label><input class="form-input" id="fStock" type="number" min="0" placeholder="0" /></div>
+        <div class="form-group"><label class="form-label">Өлчөм бирдиги</label>
+          <select class="form-input" id="fUnit"><option>кг</option><option>шт.</option><option>л</option><option>уп.</option><option>меш.</option><option>кор.</option></select>
+        </div>
+      </div>
+      <div class="form-section-label">Оптом баалары (₽)</div>
+      <div class="price-inputs">
+        <div class="form-group"><label class="form-label">1 дан</label><input class="form-input" id="fP1" type="number" min="0" placeholder="0" /></div>
+        <div class="form-group"><label class="form-label">10 дан</label><input class="form-input" id="fP10" type="number" min="0" placeholder="0" /></div>
+        <div class="form-group"><label class="form-label">100 дөн</label><input class="form-input" id="fP100" type="number" min="0" placeholder="0" /></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="catalog.closeModal()">Жокко чыгаруу</button>
+      <button class="btn btn-primary" onclick="catalog.save()"><i class="ti ti-check"></i> Сактоо</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="orderModalOverlay" onclick="orders.closeModal()"></div>
+  <div class="modal modal-wide" id="orderModal">
+    <div class="modal-header">
+      <h2 class="modal-title">Жаңы заказ</h2>
+      <button class="modal-close" onclick="orders.closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Кардар</label><select class="form-input" id="oClient"></select></div>
+        <div class="form-group"><label class="form-label">Жеткирүү датасы</label><input class="form-input" id="oDate" type="date" /></div>
+      </div>
+      <div class="form-section-label">Заказ позициялары</div>
+      <div id="orderItems"></div>
+      <button class="btn btn-outline" style="margin-top:8px;width:100%" onclick="orders.addItem()"><i class="ti ti-plus"></i> Позиция кошуу</button>
+      <div class="order-total-row"><span style="color:var(--col-text-secondary)">Жыйынтык:</span><span class="order-total-val" id="orderTotal">0 ₽</span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="orders.closeModal()">Жокко чыгаруу</button>
+      <button class="btn btn-primary" onclick="orders.save()"><i class="ti ti-check"></i> Заказ түзүү</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="clientModalOverlay" onclick="clientsPage.closeModal()"></div>
+  <div class="modal" id="clientModal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="clientModalTitle">Жаңы кардар</h2>
+      <button class="modal-close" onclick="clientsPage.closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Компания аталышы</label><input class="form-input" id="cName" type="text" placeholder="ООО Ромашка" /></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Байланышуучу адам</label><input class="form-input" id="cContact" type="text" placeholder="Иван Иванов" /></div>
+        <div class="form-group"><label class="form-label">Телефон</label><input class="form-input" id="cPhone" type="text" placeholder="+996 700 000 000" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="cEmail" type="email" placeholder="info@company.kg" /></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Кардар түрү</label>
+          <select class="form-input" id="cType"><option>Розница</option><option>Опт</option><option>Дистрибьютор</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">ИНН</label><input class="form-input" id="cInn" type="text" placeholder="00000000000000" /></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="clientsPage.closeModal()">Жокко чыгаруу</button>
+      <button class="btn btn-primary" onclick="clientsPage.save()"><i class="ti ti-check"></i> Сактоо</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="catModalOverlay" onclick="categories.closeModal()"></div>
+  <div class="modal" id="catModal">
+    <div class="modal-header">
+      <h2 class="modal-title">Жаңы категория</h2>
+      <button class="modal-close" onclick="categories.closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Аталышы</label><input class="form-input" id="catName" type="text" placeholder="Жашылчалар" /></div>
+      <div class="form-group"><label class="form-label">Сүрөттөмөсү</label><input class="form-input" id="catDesc" type="text" placeholder="Картошка, морковь, пияз" /></div>
+      <div class="form-group"><label class="form-label">Сүрөтчө</label>
+        <select class="form-input" id="catIcon">
+          <option value="ti-plant">Жашылчалар</option>
+          <option value="ti-apple">Мөмө-жемиш</option>
+          <option value="ti-leaf">Жашылдыктар</option>
+          <option value="ti-box">Бакалея</option>
+          <option value="ti-droplet">Сүт азыктары</option>
+          <option value="ti-meat">Эт жана куш</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="categories.closeModal()">Жокко чыгаруу</button>
+      <button class="btn btn-primary" onclick="categories.save()"><i class="ti ti-check"></i> Сактоо</button>
+    </div>
+  </div>
+
+  <div class="toast" id="globalToast"><i class="ti ti-check"></i><span id="toastMsg"></span></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
